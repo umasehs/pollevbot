@@ -194,8 +194,11 @@ class PollBot:
             )
         try:
             r = self.session.get(url, timeout=0.3)
+            message = json.loads(r.json()['message'])
+            if 'error' in message:
+                return message
             # Unique id for poll
-            poll_id = json.loads(r.json()['message'])['uid']
+            poll_id = message['uid']
         # Firehose either doesn't respond or responds with no data if no poll is open.
         except (requests.exceptions.ReadTimeout, KeyError):
             return None
@@ -241,6 +244,14 @@ class PollBot:
 
         while self.alive():
             poll_id = self.get_new_poll_id(token)
+            if poll_id and "error" in poll_id:
+                try:
+                    self.login()
+                    token = self.get_firehose_token()
+                except (LoginError, ValueError) as e:
+                    logger.error(e)
+                    return
+                poll_id = self.get_new_poll_id(token)
 
             if poll_id is None:
                 logger.info(f'`{self.host}` has not opened any new polls. '
