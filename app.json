@@ -1,7 +1,7 @@
 {
     "name": "pollevbot",
     "description": "A response bot for multiple-choice polls on PollEverywhere",
-    "repository": "https://github.com/danielqiang/pollevbot",
+    "repository": "https://github.com/umasehs/pollevbot",
     "env": {
         "USERNAME": {
             "description": "PollEv account username"
